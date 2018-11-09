@@ -22,6 +22,6 @@ $ npm install -D scrypt-wasm
 
 ```
 import('scrypt-wasm').then((wasm)=>{
-    console.log(wasm.scrypt('password in hex', 'salt in hex', n, r, p))
+    console.log(wasm.scrypt('password in hex', 'salt in hex', n, r, p, dklen))
 })
 ```
