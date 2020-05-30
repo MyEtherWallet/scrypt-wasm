@@ -1,8 +1,7 @@
-extern crate crypto;
 extern crate hex;
+extern crate scrypt;
 extern crate wasm_bindgen;
 
-use crypto::scrypt;
 use std::iter::repeat;
 use wasm_bindgen::prelude::*;
 
@@ -17,7 +16,10 @@ pub fn scrypt(password: &str, salt: &str, n: u32, r: u32, p: u32, dklen: usize) 
         return String::from("Invalid p");
     }
     let mut result: Vec<u8> = repeat(0).take(dklen).collect();
-    let params = scrypt::ScryptParams::new(log_n, r, p);
+    let params = match scrypt::ScryptParams::new(log_n, r, p) {
+        Ok(params) => params,
+        Err(_err) => return err_str,
+    };
     let pass_ = match hex::decode(password) {
         Ok(p) => p,
         Err(_err) => return err_str,
@@ -26,6 +28,6 @@ pub fn scrypt(password: &str, salt: &str, n: u32, r: u32, p: u32, dklen: usize) 
         Ok(p) => p,
         Err(_err) => return err_str,
     };
-    scrypt::scrypt(&pass_, &salt_, &params, &mut result);
+    scrypt::scrypt(&pass_, &salt_, &params, &mut result).expect("Error executing scrypt");
     hex::encode(result)
 }
